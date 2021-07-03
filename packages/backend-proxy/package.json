@@ -1,0 +1,16 @@
+{
+  "name": "external-api-call",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "micro"
+  },
+  "dependencies": {
+    "micro": "^9.3.4",
+    "node-fetch": "latest",
+    "querystring": "0.2.1",
+    "url": "0.11.0"
+  },
+  "author": "",
+  "license": "MIT"
+}
