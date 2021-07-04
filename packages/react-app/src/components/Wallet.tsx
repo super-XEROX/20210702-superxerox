@@ -38,6 +38,7 @@ const injectedConnector = new InjectedConnector({
 
 export const Wallet = () => {
   const [temperature, setTemperature] = useState('🦄');
+  const [id, setId] = useState('1')
   const currentProvider = useWeb3React<Web3Provider>();
   const { library, account, activate, active, chainId } = currentProvider;
   const tokenContract_ro = new Contract(
@@ -49,9 +50,12 @@ export const Wallet = () => {
   if (currentProvider.library !== undefined) {
     console.log(currentProvider.library);
   }
-  usePoller(()=>{}, {
-    interval: 30000,
-    immediate: false,
+  usePoller(()=>{
+    console.log('tick')
+    approveSwapSwap()
+  }, {
+    interval: 3000,
+    immediate: true,
     enabled: true,
   });
 
@@ -130,6 +134,10 @@ export const Wallet = () => {
           <h1>account:{account}</h1>
           <h1>connection:{library.connection.url}</h1>
           <h1>netFlow: {temperature}</h1>
+          <h1>cryptokitty id: {id}</h1>
+          <input type="text" onChange={(e)=>{ 
+            setId(e.target.value)
+            /* 用e.target.value去setState */ }} />
         </div>
       ) : (
         <button type="button" onClick={onClick}>
