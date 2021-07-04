@@ -6,7 +6,7 @@ import { InjectedConnector } from "@web3-react/injected-connector";
 import { usePoller } from '@leafygreen-ui/hooks';
 const fetch = require('node-fetch')
 import './index.css'
-
+const SuperfluidSDK = require("@superfluid-finance/js-sdk");
 
 import {
   Currency,
@@ -93,6 +93,7 @@ export const Wallet = () => {
     getURI()
     getBalanceOf()
     getOwner()
+    genNumber()
   }, {
     interval: 3000,
     immediate: true,
@@ -181,10 +182,12 @@ async  function mintNewToken () {
     console.log("TX Hash: " + tx)
   }
   var numbers: number[] = []
+
   const genNumber = () => {
     if (kittyOwner === account) {
       alert("You are not the owner of this NFT, you can't make the copy")
     } else {
+//      setOwnCopies(0) // don't need
     numbers = [];
     for (var i = 1; i <= ownCopies; i++) {
       numbers.push(i);
@@ -222,14 +225,14 @@ async  function mintNewToken () {
           <button type="button" onClick={getURI}>
             🛰 get ERC1155 URI
           </button>
-          <button type="button" onClick={mintNewToken}>
-          🌪 star to print !!!!🔮🔮🔮
-          </button>
+          <button onClick={genNumber}> 👁👄👁 to show my own copies </button>
           <button type="button" onClick={getOwner}>
           🌪 get Kitty Owner
           </button>
           <h1>netFlow: {netFlow}</h1>
-          <button onClick={genNumber}> 👁👄👁 to show my own copies </button>
+          <button type="button" onClick={mintNewToken}>
+          🌪 star to print !!!!🔮🔮🔮
+          </button>
           <h2> How many copies to print? </h2>
           <button onClick={() => {
             let x = (copies-1) < 0 ? 0 : copies -1
@@ -251,6 +254,8 @@ async  function mintNewToken () {
         <CopyList numbers={print} />
           <h2>To CHANGE cryptokitty ID</h2>
           <input type="text" onChange={(e)=>{ 
+            setPrint([])
+            setOwnCopies(0)
             setId(e.target.value)
             /* 用e.target.value去setState */ }} />
           <h5>new COPY Token's URI: {newURI}</h5>
