@@ -31,8 +31,8 @@ body {
 
   .main {
     position: relative;
-    width: 200px;
-    height: 50px;
+    width: 110px;
+    height: 100px;
     cursor: pointer;
     border-radius: 5px;
     border: 2px solid #272727;
@@ -60,11 +60,19 @@ body {
     color: #272727;
   }
   
-  .container {
+  .copies {
     display: flex;
-    align-items: center;
     height: 100%;
-    justify-content: center;
+    align-self: auto;
+    flex-basis: auto;
+  }
+
+  .container {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    display: flex;
+    height: 100%;
   }
   
   .svg {

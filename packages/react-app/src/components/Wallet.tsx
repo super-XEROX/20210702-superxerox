@@ -45,12 +45,17 @@ const PROXY_API_URL = 'http://mars.muzamint.com:3000/'
 const KITTY_API_URL = 'https://api.cryptokitties.co/kitties/' // example: https://api.cryptokitties.co/kitties/31459
 const SXContract = "0x68cB5B558F15799920E0D038eF87544e670af503"
 const CopyTokenContract = "0x50C715221c3ca24678ad11B51980bBa1A1599F3e"
+var signer: any
 
 export const Wallet = () => {
   const [netFlow, setNetFlow] = useState('🦄');
   const [id, setId] = useState(DEFAULT_KITTY_ID);
   const [kittyImage, setKittyImage] = useState('🦄'); 
   const [newURI, setNewURI] = useState('🦄'); 
+  const [copies, setCopies] = useState(1); 
+  const [print, setPrint] = useState([]); 
+  const [kittyOwner, setKittyOwner] = useState('🦄');
+  const [ownCopies, setOwnCopies] = useState(0);  
 
   const currentProvider = useWeb3React<Web3Provider>();
   const { library, account, activate, active, chainId } = currentProvider;
@@ -66,15 +71,28 @@ export const Wallet = () => {
     library
   );
 
+  const copyTokenContract_rw = new Contract( // erc1155
+    CopyTokenContract,
+    CopyTokenAbi,
+    signer
+  );
+
   console.log(currentProvider);
   if (currentProvider.library !== undefined) {
     console.log(currentProvider.library);
+    signer = library.getSigner() // is a Promise
+    console.log("Signer:" + signer)
+
+//const signature = signer.signMessage('a');
+//console.log("signature: ----> ", signature)
   }
   usePoller(()=>{
     console.log('tick')
     updateNetFlow()
     updateKittyImageURL()
     getURI()
+    getBalanceOf()
+    getOwner()
   }, {
     interval: 3000,
     immediate: true,
@@ -103,6 +121,15 @@ export const Wallet = () => {
     console.log(json.image_url_cdn) // it cound be a svg or image file
   };
 
+  const getOwner = async () => {
+    const url = KITTY_API_URL + id.toString()
+    console.log(url)
+    const response = await fetch(url);
+    const json = await response.json()
+    setKittyOwner(json.owner.address)
+    console.log(json.owner.address) // it cound be a svg or image file
+  };
+
   function updateNetFlow() {
     superXeroXContract_ro.getNetFlow()
       .then(
@@ -126,6 +153,62 @@ export const Wallet = () => {
       )
   }
 
+  function getBalanceOf() {
+    copyTokenContract_ro.balanceOf(account, id)
+      .then(
+        (x: string) => {
+          console.log(x)
+          setOwnCopies(parseInt(x.toString()))
+        }
+      )
+  }
+
+async  function mintNewToken () {
+		var bytes: any[] = []; 
+		for (var i = 0; i < newURI.length; ++i) {
+			var code = newURI.charCodeAt(i);
+			bytes = bytes.concat([code]);
+		}
+    console.log(bytes)
+    console.log('signer =>' + signer)
+    let tx = await copyTokenContract_rw.mint(account, parseInt(id), copies, bytes)
+      .then(
+        (x: string) => {
+          console.log("xxxxx " + x)
+
+        }
+      )
+    console.log("TX Hash: " + tx)
+  }
+  var numbers: number[] = []
+  const genNumber = () => {
+    if (kittyOwner === account) {
+      alert("You are not the owner of this NFT, you can't make the copy")
+    } else {
+    numbers = [];
+    for (var i = 1; i <= ownCopies; i++) {
+      numbers.push(i);
+   }
+   console.log(numbers)
+   setPrint(numbers)
+    }
+  }
+
+  function CopyList(props: { numbers: any; }) {
+    const numbers = props.numbers;
+    const listItems = numbers.map((number: number) =>
+    <div  className='copies' >
+      {number}
+    <img src={kittyImage}/>
+    </div>
+    );
+    return (
+         <div className='container'>
+           {listItems}
+         </div>
+    );
+  }
+
   return (
     <div>
       {active ? (
@@ -139,15 +222,33 @@ export const Wallet = () => {
           <button type="button" onClick={getURI}>
             🛰 get ERC1155 URI
           </button>
-          <h5>chain ID:{chainId}</h5>
-          <h5>connection:{library.connection.url}</h5>
-          <h1>account:{account}</h1>
+          <button type="button" onClick={mintNewToken}>
+          🌪 star to print !!!!🔮🔮🔮
+          </button>
+          <button type="button" onClick={getOwner}>
+          🌪 get Kitty Owner
+          </button>
           <h1>netFlow: {netFlow}</h1>
-          <h1>cryptokitty ID for COPY: {id}</h1>
+          <button onClick={genNumber}> 👁👄👁 to show my own copies </button>
+          <h2> How many copies to print? </h2>
+          <button onClick={() => {
+            let x = (copies-1) < 0 ? 0 : copies -1
+            setCopies(x)
+            }}> - </button>
+    
+           {copies} {copies <= 1?'copy':'copies'} 
+          <button onClick={() => {setCopies(copies+1)}}> + </button>
+          <h5>chain ID:{chainId}</h5>
+          <h5>:{library.connection.url}</h5>
+          <h1>account:{account}</h1>
+          <h3>cryptokitty ID for COPY: {id}</h3>
+          <h3>cryptokitty ID owner: {kittyOwner}</h3>
           <h5>cryptokitty image URL: {kittyImage}</h5>
-          <div  className='container' >
+          <div  className='main' >
           <img src={kittyImage}/>
           </div>
+           Original Copy
+        <CopyList numbers={print} />
           <h2>To CHANGE cryptokitty ID</h2>
           <input type="text" onChange={(e)=>{ 
             setId(e.target.value)
@@ -156,7 +257,7 @@ export const Wallet = () => {
         </div>
       ) : (
         <button type="button" onClick={onClick}>
-          Login with MetaMask 🐝
+          Login with MetaMask (switch network to Rinkeby) 🐝
         </button>
       )}
     </div>
