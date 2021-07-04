@@ -5,6 +5,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { usePoller } from '@leafygreen-ui/hooks';
 const fetch = require('node-fetch')
+import './index.css'
+
 
 import {
   Currency,
@@ -58,6 +60,7 @@ export const Wallet = () => {
   usePoller(()=>{
     console.log('tick')
     updateNetFlow()
+    updateKittyImageURL()
   }, {
     interval: 3000,
     immediate: true,
@@ -83,7 +86,7 @@ export const Wallet = () => {
     const response = await fetch(url);
     const json = await response.json()
     setKittyImage(json.image_url_cdn)
-    // console.log(json)
+    console.log(json.image_url_cdn) // it cound be a svg or image file
   };
 
   function updateNetFlow() {
@@ -111,7 +114,10 @@ export const Wallet = () => {
           <h1>connection:{library.connection.url}</h1>
           <h1>netFlow: {netFlow}</h1>
           <h1>cryptokitty ID for COPY: {id}</h1>
-          <h1>cryptokitty image URL: {kittyImage}</h1>
+          <h5>cryptokitty image URL: {kittyImage}</h5>
+          <div  className='container' >
+          <img src={kittyImage}/>
+          </div>
           <h2>To CHANGE cryptokitty ID</h2>
           <input type="text" onChange={(e)=>{ 
             setId(e.target.value)
