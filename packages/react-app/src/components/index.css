@@ -67,4 +67,6 @@ body {
     justify-content: center;
   }
   
-  
+  .svg {
+    width: 350px;
+  }
