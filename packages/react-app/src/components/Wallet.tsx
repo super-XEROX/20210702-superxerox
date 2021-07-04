@@ -4,6 +4,7 @@ import { Web3ReactProvider, useWeb3React } from "@web3-react/core";
 import { BigNumber } from "@ethersproject/bignumber";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { usePoller } from '@leafygreen-ui/hooks';
+const fetch = require('node-fetch')
 
 import {
   Currency,
@@ -36,9 +37,13 @@ const injectedConnector = new InjectedConnector({
   ],
 });
 
+const DEFAULT_KITTY_ID = '31459'
+const KITTY_API_URL = 'https://api.cryptokitties.co/kitties/' // example: https://api.cryptokitties.co/kitties/31459
+
 export const Wallet = () => {
-  const [temperature, setTemperature] = useState('🦄');
-  const [id, setId] = useState('1')
+  const [netFlow, setNetFlow] = useState('🦄');
+  const [id, setId] = useState(DEFAULT_KITTY_ID);
+  const [kittyImage, setKittyImage] = useState('🦄'); 
   const currentProvider = useWeb3React<Web3Provider>();
   const { library, account, activate, active, chainId } = currentProvider;
   const tokenContract_ro = new Contract(
@@ -52,7 +57,7 @@ export const Wallet = () => {
   }
   usePoller(()=>{
     console.log('tick')
-    approveSwapSwap()
+    updateNetFlow()
   }, {
     interval: 3000,
     immediate: true,
@@ -72,50 +77,21 @@ export const Wallet = () => {
     activate(injectedConnector); // use metaMask
   };
 
-  const startToSwapSwap = () => {
-    if (signatureData !== null) {
-      console.log("start to swap swap");
-      const signer = library.getSigner(account);
-      console.log(signer);
-      console.log(account);
-      const tokenContract = new Contract(
-        "0xC8d545324a12F7E87D4e5196d6d962595c6Ef78f",
-        abi,
-        signer
-      );
-      const args = [
-        account,
-        "0x9E4C996EFD1Adf643467d1a1EA51333C72a25453",
-        value,
-        deadline,
-        signatureData.v,
-        signatureData.r,
-        signatureData.s,
-      ];
-
-      const gas = tokenContract.estimateGas.permit(...args);
-
-      console.log(gas);
-      console.log(signatureData);
-      tokenContract.permit(
-        account,
-        "0x9E4C996EFD1Adf643467d1a1EA51333C72a25453",
-        value,
-        deadline,
-        signatureData.v,
-        signatureData.r,
-        signatureData.s
-      );
-    }
+  const updateKittyImageURL = async () => {
+    const url = KITTY_API_URL + id.toString()
+    console.log(url)
+    const response = await fetch(url);
+    const json = await response.json()
+    setKittyImage(json.image_url_cdn)
+    // console.log(json)
   };
 
-  function approveSwapSwap() {
-    console.log("swap ... swap ... 🤖💩 🥊 🇹🇼 Flag: Taiwan");
+  function updateNetFlow() {
     tokenContract_ro.getNetFlow()
       .then(
         (x: BigNumber) => {
           console.log(x)
-          setTemperature(x.toString())
+          setNetFlow(x.toString())
         }
       )
   }
@@ -124,24 +100,26 @@ export const Wallet = () => {
     <div>
       {active ? (
         <div>
-          <button type="button" onClick={approveSwapSwap}>
+          <button type="button" onClick={updateNetFlow}>
             📡 check super Xerox netflow!! 🌪
           </button>
-          <button type="button" onClick={startToSwapSwap}>
-            🛰 start to swap swap
+          <button type="button" onClick={updateKittyImageURL}>
+            🛰 update Kitty Image URL
           </button>
           <h1>chain ID:{chainId}</h1>
           <h1>account:{account}</h1>
           <h1>connection:{library.connection.url}</h1>
-          <h1>netFlow: {temperature}</h1>
-          <h1>cryptokitty id: {id}</h1>
+          <h1>netFlow: {netFlow}</h1>
+          <h1>cryptokitty ID for COPY: {id}</h1>
+          <h1>cryptokitty image URL: {kittyImage}</h1>
+          <h2>To CHANGE cryptokitty ID</h2>
           <input type="text" onChange={(e)=>{ 
             setId(e.target.value)
             /* 用e.target.value去setState */ }} />
         </div>
       ) : (
         <button type="button" onClick={onClick}>
-          Connect🦄
+          Login with MetaMask 🐝
         </button>
       )}
     </div>
