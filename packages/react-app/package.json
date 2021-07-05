@@ -1,6 +1,6 @@
 {
-  "name": "super xerox front-end",
-  "version": "1.0.0",
+  "name": "superxerox-frontend",
+  "version": "1.0.1",
   "main": "index.html",
   "license": "MIT",
   "scripts": {
@@ -23,6 +23,8 @@
     "@types/react-dom": "^16",
     "@uniswap/sdk": "^3.0.3",
     "@web3-react/network-connector": "^6.1.9",
+    "bignumber.js": "^9.0.1",
+    "bn": "^1.0.5",
     "create-web3-provider": "^1.6.1",
     "ethers": "^5.4.1",
     "etherspot": "^1.12.0",

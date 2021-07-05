@@ -29,6 +29,7 @@ import { Contract } from "@ethersproject/contracts";
 //import { abi } from "./FIXabi";
 import { abi } from "./SuperXeroxabi";
 import { CopyTokenAbi } from "./CopyTokenAbi";
+import { XSuperTokenAbi } from "./XSuperTokenAbi"
 
 let nonce = 0;
 const value = 300000;
@@ -47,13 +48,18 @@ const injectedConnector = new InjectedConnector({
     100, // xDAI
   ],
 });
-
+const demoAccount = '0x609683612D80A091C69747a76ec6efE284a7cf46'
 const DEFAULT_KITTY_ID = '31459'
 const PROXY_API_URL = 'http://mars.muzamint.com:3000/'
 const KITTY_API_URL = 'https://api.cryptokitties.co/kitties/' // example: https://api.cryptokitties.co/kitties/31459
-const SXContract = "0x68cB5B558F15799920E0D038eF87544e670af503"
-const CopyTokenContract = "0x50C715221c3ca24678ad11B51980bBa1A1599F3e"
+const SXContract = "0x68cB5B558F15799920E0D038eF87544e670af503" // copy machine address
+const CopyTokenContract = "0x50C715221c3ca24678ad11B51980bBa1A1599F3e" // ERC1155 -> CopyToken
+// COPY token is a copy a cryptoKitty in ERC1155 form. balanceOf (address, id) where id is the kitty id
+const XSuperTokenContract = "0x54e2bBD7E820655C4Ee2A1Cf3DEe4Eb989a31520" // ERC777 -> INativeSuperTokenCustom
+// Xerox Super Token is the total amount of credit (steamed) to this copy machine for this account
+
 var signer: any
+var sf: any
 
 class NoEthereumProviderError extends Error {
   public constructor() {
@@ -62,15 +68,16 @@ class NoEthereumProviderError extends Error {
     this.message = 'No Ethereum provider was found on window.ethereum.'
   }
 }
+
+const provider2 = new ethers.providers.Web3Provider(window.ethereum)
+console.log("provider2 ->", provider2)
+
 export const Wallet = () => {
   if (!window) {
     throw new NoEthereumProviderError()
   } else{
 console.log("window.ethereum -> ", window.ethereum)
   }
-  const provider2 = new ethers.providers.Web3Provider(window.ethereum)
-  console.log("provider2 ->", provider2)
-
 
   const [netFlow, setNetFlow] = useState('🦄');
   const [id, setId] = useState(DEFAULT_KITTY_ID);
@@ -80,6 +87,8 @@ console.log("window.ethereum -> ", window.ethereum)
   const [print, setPrint] = useState([]); 
   const [kittyOwner, setKittyOwner] = useState('🦄');
   const [ownCopies, setOwnCopies] = useState(0);  
+  const [ownX, setOwnX] = useState(0);  
+  const [ownDAIx, setOwnDAIx] = useState('🦄');  
 
   const currentProvider = useWeb3React<Web3Provider>();
   const { library, account, activate, active, chainId } = currentProvider;
@@ -88,6 +97,19 @@ console.log("window.ethereum -> ", window.ethereum)
     abi,
     library
   );
+
+  const xTokenContract_ro = new Contract( // erc1155
+    XSuperTokenContract,
+    XSuperTokenAbi,
+    library
+  );
+
+  const xTokenContract_rw = new Contract( // erc1155
+    XSuperTokenContract,
+    XSuperTokenAbi,
+    signer
+  );
+
 
   const copyTokenContract_ro = new Contract( // erc1155
     CopyTokenContract,
@@ -110,6 +132,9 @@ console.log("window.ethereum -> ", window.ethereum)
 //const signature = signer.signMessage('a');
 //console.log("signature: ----> ", signature)
   }
+  useEffect(() => {
+    initialize()
+  }, []);
   usePoller(()=>{
     console.log('tick')
     updateNetFlow()
@@ -117,6 +142,8 @@ console.log("window.ethereum -> ", window.ethereum)
     getURI()
     getBalanceOf()
     getOwner()
+    getSTBalance()
+    getXBalanceOf()
     genNumber()
   }, {
     interval: 3000,
@@ -151,14 +178,46 @@ console.log("window.ethereum -> ", window.ethereum)
     console.info('SDK created');
   console.log("provider -> ", walletProvider);
 
-    const sf = new SuperfluidSDK.Framework({
+      sf = new SuperfluidSDK.Framework({
       ethers: provider2,
       version: "v1", //"test" or "v1"
       tokens: ["fDAI", "fDAIx"]
   });
     await sf.initialize()
-let daix = sf.tokens.fDAIx;
+    let daix = sf.tokens.fDAIx;
     console.log(sf)
+
+}
+
+const getAllBalance = async () => {
+  await getSTBalance();
+  await getXBalanceOf();
+}
+
+const getSTBalance = async () => {
+     // super token
+
+const daiAddress = await sf.resolver.get("tokens.fDAI");
+const daixAddress = await sf.resolver.get("tokens.fDAIx");
+console.log(daiAddress)
+const dai = await sf.contracts.TestToken.at(daiAddress);
+console.log(dai)
+
+const bob = sf.user(
+  { address: account,
+  token: sf.tokens.fDAIx.address }
+);
+    const x = await dai.balanceOf(bob.address)
+
+const y = x.div(BigNumber.from(1000000000))
+const z = y.div(BigNumber.from(1000000000))
+setOwnDAIx(z.toString())
+console.log('my fDAIx balance', x)
+console.log('my fDAIx balance', z)
+const details = await bob.details();
+console.log(details);
+//const result = await sf.cfa.getFlow({superToken: daixAddress, sender: bob.address, receiver: SXContract})
+//console.log('ming-> ',result) // not working.
   };
 
   const updateKittyImageURL = async () => {
@@ -184,15 +243,22 @@ let daix = sf.tokens.fDAIx;
       .then(
         (x: BigNumber) => {
           console.log(x)
-          setNetFlow(x.toString())
+          const y = x.div(BigNumber.from(1000000000))
+          const z = y.div(BigNumber.from(277777))
+          setNetFlow(z.toString())
         }
       )
+  }
+
+  function spendXtoken() {
+    xTokenContract_rw.transferFrom(account,SXContract,ethers.utils.parseEther(copies.toString()))
+    .then(console.log)
   }
 
   function getURI() {
     copyTokenContract_ro.uri(id)
       .then(
-        (x: string) => {
+        (x: BigNumber) => {
           const number = parseInt(id)
 	        const hexString = number.toString(16).padStart(64, "0") // 000000000000000000000000000000000000000000000000000000000004cce0
           const newTokenURI = PROXY_API_URL + hexString + '.json'
@@ -202,10 +268,22 @@ let daix = sf.tokens.fDAIx;
       )
   }
 
+  function getXBalanceOf() {
+    xTokenContract_ro.balanceOf(account)
+      .then(
+        (x: BigNumber) => {
+          console.log(x)
+          const y = x.div(BigNumber.from(1000000000))
+          const z = y.div(BigNumber.from(1000000000))
+          setOwnX(parseInt(z.toString()))
+        }
+      )
+  }
+
   function getBalanceOf() {
     copyTokenContract_ro.balanceOf(account, id)
       .then(
-        (x: string) => {
+        (x: BigNumber) => {
           console.log(x)
           setOwnCopies(parseInt(x.toString()))
         }
@@ -213,6 +291,16 @@ let daix = sf.tokens.fDAIx;
   }
 
 async  function mintNewToken () {
+  if (copies === 0) {
+    alert('How many copies do you want to print.') 
+  } else 
+  if (ownX < copies) {   
+    const message = 'You need  ' + copies + '  COPY Super ' + (copies > 1? 'Token.':'Tokens.\n You can stream fDAIx supter tokens to 0x68cB5B558F15799920E0D038eF87544e670af503\n And you will get COPY super tokens in return.')
+    alert(message)
+ } else 
+ if (!(kittyOwner === account || account === demoAccount)) {
+   alert("You are not the owner of this NFT, you can't make the copy.")
+ } else {
 		var bytes: any[] = []; 
 		for (var i = 0; i < newURI.length; ++i) {
 			var code = newURI.charCodeAt(i);
@@ -228,21 +316,18 @@ async  function mintNewToken () {
         }
       )
     console.log("TX Hash: " + tx)
+    spendXtoken() // deduct X super token, after copyed.
   }
+}
   var numbers: number[] = []
 
   const genNumber = () => {
-    if (kittyOwner === account) {
-      alert("You are not the owner of this NFT, you can't make the copy")
-    } else {
-//      setOwnCopies(0) // don't need
     numbers = [];
     for (var i = 1; i <= ownCopies; i++) {
       numbers.push(i);
    }
    console.log(numbers)
    setPrint(numbers)
-    }
   }
 
   function CopyList(props: { numbers: any; }) {
@@ -267,6 +352,9 @@ async  function mintNewToken () {
           <button type="button" onClick={initialize}>
             📡 superfluod initialization!! 🌪
           </button>
+          <button type="button" onClick={spendXtoken}>
+            🌪 deduct X tokens
+          </button>
           <button type="button" onClick={updateNetFlow}>
             📡 check super Xerox netflow!! 🌪
           </button>
@@ -276,13 +364,18 @@ async  function mintNewToken () {
           <button type="button" onClick={getURI}>
             🛰 get ERC1155 URI
           </button>
+          <button type="button" onClick={getAllBalance}>
+            🛰 get my fDAIx balance
+          </button>
           <button onClick={genNumber}> 👁👄👁 to show my own copies </button>
           <button type="button" onClick={getOwner}>
           🌪 get Kitty Owner
           </button>
-          <h1>netFlow: {netFlow}</h1>
+          <h2>You can stream fDAIx supter tokens to 0x68cB5B558F15799920E0D038eF87544e670af503 to pay for the NFT copies. </h2>
+          <h2>And you will get same amount of the COPY super tokens in return.</h2>
+          <h1>netFlow: {netFlow} per hour </h1>
           <button type="button" onClick={mintNewToken}>
-          🌪 star to print !!!!🔮🔮🔮
+          🌪 star to print !!!! 👈 👈 👈
           </button>
           <h2> How many copies to print? </h2>
           <button onClick={() => {
@@ -292,10 +385,12 @@ async  function mintNewToken () {
     
            {copies} {copies <= 1?'copy':'copies'} 
           <button onClick={() => {setCopies(copies+1)}}> + </button>
-          <h5>chain ID:{chainId}</h5>
+          <h5>chain ID: {chainId}</h5>
           <h5>:{library.connection.url}</h5>
-          <h1>account:{account}</h1>
-          <h3>cryptokitty ID for COPY: {id}</h3>
+          <h1>account: {account}</h1>
+          <h1>you own fDAIx: {ownDAIx}</h1>
+          <h1>You have {ownX} Super XEROX (COPY) Tokens. (0x54e2bBD7E820655C4Ee2A1Cf3DEe4Eb989a31520)</h1>
+          <h1>cryptokitty ID for COPY: {id}</h1>
           <h3>cryptokitty ID owner: {kittyOwner}</h3>
           <h5>cryptokitty image URL: {kittyImage}</h5>
           <div  className='main' >
@@ -312,9 +407,12 @@ async  function mintNewToken () {
           <h5>new COPY Token's URI: {newURI}</h5>
         </div>
       ) : (
+        <>
+        <h1>Please To Use Rinkeby Testnet and Pay fDAIx for Printing.</h1>
         <button type="button" onClick={onClick}>
-          Login with MetaMask (switch network to Rinkeby) 🐝
+          Login with MetaMask 🐝
         </button>
+        </>
       )}
     </div>
   );
