@@ -3,10 +3,18 @@ import { Web3Provider } from "@ethersproject/providers";
 import { Web3ReactProvider, useWeb3React } from "@web3-react/core";
 import { BigNumber } from "@ethersproject/bignumber";
 import { InjectedConnector } from "@web3-react/injected-connector";
+import {  NetworkConnector } from "@web3-react/network-connector";
+import { Sdk, MetaMaskWalletProvider } from 'etherspot';
+import { ethers } from "ethers";
+
 import { usePoller } from '@leafygreen-ui/hooks';
 const fetch = require('node-fetch')
 import './index.css'
 const SuperfluidSDK = require("@superfluid-finance/js-sdk");
+const Infura = new NetworkConnector({
+  urls: { 1: 'https://mainnet.infura.io/v3/84842078b09946638c03157f83405213' },
+  defaultChainId: 1
+})
 
 import {
   Currency,
@@ -47,7 +55,23 @@ const SXContract = "0x68cB5B558F15799920E0D038eF87544e670af503"
 const CopyTokenContract = "0x50C715221c3ca24678ad11B51980bBa1A1599F3e"
 var signer: any
 
+class NoEthereumProviderError extends Error {
+  public constructor() {
+    super()
+    this.name = this.constructor.name
+    this.message = 'No Ethereum provider was found on window.ethereum.'
+  }
+}
 export const Wallet = () => {
+  if (!window) {
+    throw new NoEthereumProviderError()
+  } else {
+console.log("window.ethereum -> ", window.ethereum)
+  }
+  const provider2 = new ethers.providers.Web3Provider(window.ethereum)
+  console.log("provider2 ->", provider2)
+
+
   const [netFlow, setNetFlow] = useState('🦄');
   const [id, setId] = useState(DEFAULT_KITTY_ID);
   const [kittyImage, setKittyImage] = useState('🦄'); 
@@ -79,9 +103,9 @@ export const Wallet = () => {
 
   console.log(currentProvider);
   if (currentProvider.library !== undefined) {
-    console.log(currentProvider.library);
+    console.log("provider -> ", currentProvider.library.provider);
     signer = library.getSigner() // is a Promise
-    console.log("Signer:" + signer)
+    console.log("Signer:" , signer)
 
 //const signature = signer.signMessage('a');
 //console.log("signature: ----> ", signature)
@@ -95,7 +119,7 @@ export const Wallet = () => {
     getOwner()
     genNumber()
   }, {
-    interval: 3000,
+    interval: 30000,
     immediate: true,
     enabled: true,
   });
@@ -108,9 +132,33 @@ export const Wallet = () => {
   } | null>(null);
 
 
-  const onClick = () => {
+  const onClick = async () => {
     //activate(bscConnector); // TODO
     activate(injectedConnector); // use metaMask
+    //activate(Infura) // use Infura
+  };
+
+  const initialize = async () => {
+    if (!MetaMaskWalletProvider.detect()) {
+      console.log('MetaMask not detected');
+      return;
+    }
+  
+    const walletProvider = await MetaMaskWalletProvider.connect();
+  
+    const sdk = new Sdk(walletProvider);
+  
+    console.info('SDK created');
+  console.log("provider -> ", walletProvider);
+
+    const sf = new SuperfluidSDK.Framework({
+      ethers: provider2,
+      version: "v1", //"test" or "v1"
+      tokens: ["fDAI", "fDAIx"]
+  });
+    await sf.initialize()
+let daix = sf.tokens.fDAIx;
+    console.log(sf)
   };
 
   const updateKittyImageURL = async () => {
@@ -171,7 +219,7 @@ async  function mintNewToken () {
 			bytes = bytes.concat([code]);
 		}
     console.log(bytes)
-    console.log('signer =>' + signer)
+    console.log('signer =>' , signer)
     let tx = await copyTokenContract_rw.mint(account, parseInt(id), copies, bytes)
       .then(
         (x: string) => {
@@ -216,6 +264,9 @@ async  function mintNewToken () {
     <div>
       {active ? (
         <div>
+          <button type="button" onClick={initialize}>
+            📡 superfluod initialization!! 🌪
+          </button>
           <button type="button" onClick={updateNetFlow}>
             📡 check super Xerox netflow!! 🌪
           </button>
