@@ -19,7 +19,14 @@ You can receive these COPY tokens as the credit for printing. You can stream fDA
 * The cost for copy a "Color" NFT is one xDAI or one COPY token.
 * You can transfer the copies of your NFT token as you want.  
 
-<<<<<<< HEAD
+# Demo ScreenShot
+
 ![Screenshot of the status page](docs/screenshots/demoSuperXerox.png)
-=======
->>>>>>> 0edb52ba622cbfb1ab4680b1cd3725e265577e0a
+
+# Live Demo
+*🚀 Deployment to IPFS complete!
+
+Use the links below to access your app:
+* IPFS: https://ipfs.io/ipfs/QmWNd1xaWu4LUn3Ut63pSdZFW2HmSrpNwQbHvb9eoDmVyg
+
+* IPNS: https://ipfs.io/ipns/k51qzi5uqu5djaaeue73nfojpvksbaqewifekpynvlzprdb00ebmys469y9dyi
