@@ -27,6 +27,6 @@ You can receive these COPY tokens as the credit for printing. You can stream fDA
 *🚀 Deployment to IPFS complete!
 
 Use the links below to access your app:
-* IPFS: https://ipfs.io/ipfs/QmWNd1xaWu4LUn3Ut63pSdZFW2HmSrpNwQbHvb9eoDmVyg
+* IPFS: https://ipfs.io/ipfs/QmTHMcK4kFVKexrt59vdiEzKBx4cSRTWzDaQjLGdGNEHb7
 
 * IPNS: https://ipfs.io/ipns/k51qzi5uqu5djaaeue73nfojpvksbaqewifekpynvlzprdb00ebmys469y9dyi
