@@ -1,5 +1,7 @@
 # Super COOL, Super XEROX
 You can copy your own NFT (such as CryptoKitties) and share or exchange with your friends.
+* You can stream fDAIx supter tokens to 0x68cB5B558F15799920E0D038eF87544e670af503 to pay for the NFT copies.
+And you will get same amount of the COPY super tokens in return.
 
 # Contract addresses (on Rinkeby)
 * Super XEROR (the copy machine) "0x68cB5B558F15799920E0D038eF87544e670af503" 
@@ -24,9 +26,11 @@ You can receive these COPY tokens as the credit for printing. You can stream fDA
 ![Screenshot of the status page](docs/screenshots/demoSuperXerox.png)
 
 # Live Demo
+
+Vercel: https://react-app-blush.vercel.app
+
 *🚀 Deployment to IPFS complete!
 
 Use the links below to access your app:
 * IPFS: https://ipfs.io/ipfs/QmTHMcK4kFVKexrt59vdiEzKBx4cSRTWzDaQjLGdGNEHb7
-
 * IPNS: https://ipfs.io/ipns/k51qzi5uqu5djaaeue73nfojpvksbaqewifekpynvlzprdb00ebmys469y9dyi
