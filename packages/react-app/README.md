@@ -1,30 +1,36 @@
 # deploy to ipfs and ipns
 ```
-✗ yarn ipfs:deploy
+➜  react-app git:(main) ✗ yarn build
+yarn run v1.22.10
+$ parcel build src/index.html
+✨  Built in 3.26s.
+
+dist/src.7bcfba0b.js.map      ⚠️  7.4 MB    491ms
+dist/src.7bcfba0b.js         ⚠️  2.72 MB    2.66s
+dist/src.8305316c.css.map       1.94 KB      1ms
+dist/src.8305316c.css             854 B     13ms
+dist/index.html                   187 B     14ms
+Bundle breakdown saved in report: /Users/mingderwang/src/20210702-superxerox/packages/react-app/dist/report.html
+✨  Done in 5.52s.
+➜  react-app git:(main) ✗ yarn ipfs:deploy
 yarn run v1.22.10
 $ node scripts/ipfs.js
 🛰  Sending to IPFS...
-# deploy to ipfs and ipns
-📡 App deployed to IPFS with hash: QmZcoSEx2wzUi7fPnmsRPp6Ktk7mFwv1FC8iiDoqoE9c5U
+📡 App deployed to IPFS with hash: QmTHMcK4kFVKexrt59vdiEzKBx4cSRTWzDaQjLGdGNEHb7
 
-✍️  Publishing /ipfs/QmZcoSEx2wzUi7fPnmsRPp6Ktk7mFwv1FC8iiDoqoE9c5U to IPNS...
+✍️  Publishing /ipfs/QmTHMcK4kFVKexrt59vdiEzKBx4cSRTWzDaQjLGdGNEHb7 to IPNS...
 🔖 App published to IPNS with name: k51qzi5uqu5djaaeue73nfojpvksbaqewifekpynvlzprdb00ebmys469y9dyi
 
 🚀 Deployment to IPFS complete!
 
 Use the links below to access your app:
-   IPFS: https://ipfs.io/ipfs/QmZcoSEx2wzUi7fPnmsRPp6Ktk7mFwv1FC8iiDoqoE9c5U
+   IPFS: https://ipfs.io/ipfs/QmTHMcK4kFVKexrt59vdiEzKBx4cSRTWzDaQjLGdGNEHb7
    IPNS: https://ipfs.io/ipns/k51qzi5uqu5djaaeue73nfojpvksbaqewifekpynvlzprdb00ebmys469y9dyi
 
 Each new deployment will have a unique IPFS hash while the IPNS name will always point at the most recent deployment.
 It is recommended that you share the IPNS link so that people always see the newest version of your app.
 
-✨  Done in 56.70s.
-➜  20210220-react-typescript-parcel-bsc-gitcoin-hackathon git:(main) ✗ yarn start
-yarn run v1.22.10
-$ parcel src/index.html
-Server running at http://localhost:1234
-✨  Built in 1.29s.
+✨  Done in 45.56s.
 ```
 
 # Create SPA: React + Typescript + Parcel

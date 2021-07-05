@@ -373,6 +373,7 @@ async  function mintNewToken () {
           </button>
           <h2>You can stream fDAIx supter tokens to 0x68cB5B558F15799920E0D038eF87544e670af503 to pay for the NFT copies. </h2>
           <h2>And you will get same amount of the COPY super tokens in return.</h2>
+          <a href="https://app.superfluid.finance/">(use Superfluid Dashboard)</a>
           <h1>netFlow: {netFlow} per hour </h1>
           <button type="button" onClick={mintNewToken}>
           🌪 star to print !!!! 👈 👈 👈
@@ -409,6 +410,8 @@ async  function mintNewToken () {
       ) : (
         <>
         <h1>Please To Use Rinkeby Testnet and Pay fDAIx for Printing.</h1>
+        <a href="https://app.superfluid.finance/">Go to Superfluid Dashboard</a>
+        <p></p>
         <button type="button" onClick={onClick}>
           Login with MetaMask 🐝
         </button>

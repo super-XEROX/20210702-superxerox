@@ -52,7 +52,7 @@ contract Bootstrap {
         _copyToken = INativeSuperToken(address(new NativeSuperTokenProxy()));
         emit NewContract(address(_copyToken));
         
-        // Deploy the machine using the new COPT token address
+        // Deploy the machine using the new SODA token address
         _copyMachine = address(new SuperXerox(_host, _cfa, _acceptedToken, ISuperToken(address(_copyToken))));
         emit NewContract(_copyMachine);
     }

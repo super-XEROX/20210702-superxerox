@@ -14,3 +14,6 @@ Flow created.
   ida: { subscriptions: [] }
 }
 ```
+
+# deploy contract by remix or hardhat
+# verify contracts by hardhat
