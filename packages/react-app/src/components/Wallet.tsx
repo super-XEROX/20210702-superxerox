@@ -65,7 +65,7 @@ class NoEthereumProviderError extends Error {
 export const Wallet = () => {
   if (!window) {
     throw new NoEthereumProviderError()
-  } else {
+  } else{
 console.log("window.ethereum -> ", window.ethereum)
   }
   const provider2 = new ethers.providers.Web3Provider(window.ethereum)
@@ -119,7 +119,7 @@ console.log("window.ethereum -> ", window.ethereum)
     getOwner()
     genNumber()
   }, {
-    interval: 30000,
+    interval: 3000,
     immediate: true,
     enabled: true,
   });
