@@ -18,3 +18,5 @@ You can receive these COPY tokens as the credit for printing. You can stream fDA
 * You can only copy your own NFS tokens ONLY!! 👏  (eventially for any NFS, this version only support CryptoKitties, will support OpenSea in the future)
 * The cost for copy a "Color" NFT is one xDAI or one COPY token.
 * You can transfer the copies of your NFT token as you want.  
+
+[](https://ucb871109ea1fbfb7dcd1db7534c.previews.dropboxusercontent.com/p/thumb/ABNlY0pDopn8rK6Dz9B_Tj62gwpOCVUxze4aUYteAOK6yeeQJfD8IweIH8qRImqvzOPqu1wbIZJ7BlZ5a1qAdV4DyRxoKBmXH1jkY1sqXqqnx7V9OThuK8i36QsgqhKm_jW2RiiZeL0qjVwY4mqkDRsQIuPyWQ-bhiRu38o6PYMbLKLvjeQN4Rj-lpPaPw-vv8rrg4FWQ-x71FIYBh0aYaPzq0id1Klek-0P7GNWNoNmNr0FovPwvY9JwgJC-jzI-UBBeNC1ye7I-yhBE6uIOFFtTN1n6qKuqpt5cJkMpEN9gp1dOrz_L2ZGRJ-IHtipopIctfoziDXncKebhGdA5K3OQztRy9HjYA_L0JJWD0eqCN5Wjk0TqFmyRm431BLEIN102R9EQnmXKHb8VkBippRIzy6lcWxDSpDdD2cUUtnmUg/p.png)
