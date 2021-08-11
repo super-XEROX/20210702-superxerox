@@ -42,3 +42,6 @@ Use the links below to access your app:
 
 # slide
 https://slides.com/ming-derwang/deck-ea6370
+
+# ETHGlobal Hackathon Showcase
+https://showcase.ethglobal.co/hackmoney2021/superxerox
