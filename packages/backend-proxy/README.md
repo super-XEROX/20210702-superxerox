@@ -7,7 +7,7 @@ https://api.cryptokitties.co/kitties/1231
 ```
 * proxy server
 ```
-the COPY Token's URI will be http://mars.muzamint.com:3000/00000000000000000000000000000000000000000000000000000000000004cf.json
+the COPY Token's URI will be http://mars.muzamint.com:5002/000000000000000000000000000000000000000000000000000000000004cce0.json
 ```
 # run
 ```
